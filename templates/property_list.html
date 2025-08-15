@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Property List – Property Planner{% endblock %}
+{% block content %}
+  <h1 class="page-title">Property List</h1>
+  <table class="property-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Type</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for property in properties %}
+      <tr>
+        <td>{{ property.id }}</td>
+        <td>{{ property.name }}</td>
+        <td>£{{ '{:,.2f}'.format(property.value) }}</td>
+        <td>{{ property.type.value }}</td>
+        <td>{{ property.address }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="no-data">No properties added yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

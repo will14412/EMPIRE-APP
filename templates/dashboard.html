@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard – Property Planner{% endblock %}
+{% block content %}
+  <h1 class="page-title">Dashboard</h1>
+  <div class="dashboard-cards">
+    <div class="card">
+      <h2>Personal Properties</h2>
+      <p class="value">{{ personal_count }}</p>
+    </div>
+    <div class="card">
+      <h2>Company Properties</h2>
+      <p class="value">{{ company_count }}</p>
+    </div>
+    <div class="card">
+      <h2>Total Portfolio Value</h2>
+      <p class="value">£{{ '{:,.2f}'.format(total_value) }}</p>
+    </div>
+    <div class="card">
+      <h2>Company Portfolio Value</h2>
+      <p class="value">£{{ '{:,.2f}'.format(company_value) }}</p>
+    </div>
+  </div>
+{% endblock %}

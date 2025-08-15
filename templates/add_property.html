@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}Add Property – Property Planner{% endblock %}
+{% block content %}
+  <h1 class="page-title">Add New Property</h1>
+  <form action="/properties/add" method="post" class="form">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+    <div class="form-group">
+      <label for="value">Value (£)</label>
+      <input
+        type="number"
+        id="value"
+        name="value"
+        step="0.01"
+        min="0"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select id="type" name="type" required>
+        <option value="personal">Personal</option>
+        <option value="company">Company</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" />
+    </div>
+    <button type="submit" class="btn">Add Property</button>
+  </form>
+{% endblock %}
