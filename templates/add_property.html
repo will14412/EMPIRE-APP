@@ -2,14 +2,20 @@
 {% block title %}Add Property – Property Planner{% endblock %}
 {% block content %}
   <h1 class="page-title">Add New Property</h1>
-  <form action="/properties/add" method="post" class="form">
+  <form method="post" class="form" id="property_form">
     <div class="form-group">
       <label for="postcode">Postcode</label>
-      <input type="text" id="postcode" placeholder="Enter postcode" />
+      <input
+        type="text"
+        id="postcode"
+        name="postcode"
+        placeholder="Enter postcode"
+        required
+      />
     </div>
     <div class="form-group">
       <label for="address">Address</label>
-      <select id="address" name="address">
+      <select id="address" name="address" required>
         <option value="">Select an address</option>
       </select>
     </div>
@@ -18,15 +24,19 @@
       <input type="text" id="name" name="name" required />
     </div>
     <div class="form-group">
-      <label for="value">Value (£)</label>
+      <label for="purchase_price">Purchase price (£)</label>
       <input
         type="number"
-        id="value"
-        name="value"
+        id="purchase_price"
+        name="purchase_price"
         step="0.01"
         min="0"
         required
       />
+    </div>
+    <div class="form-group">
+      <label for="acquisition_date">Acquisition date</label>
+      <input type="date" id="acquisition_date" name="acquisition_date" required />
     </div>
     <div class="form-group">
       <label for="type">Type</label>
@@ -38,7 +48,7 @@
     <h2 class="section-title">Lease</h2>
     <div class="form-group">
       <label for="lease_type">Lease type</label>
-      <select id="lease_type" name="lease_type">
+      <select id="lease_type" name="lease_type" required>
         <option value="council_20">Council 20 Year</option>
         <option value="council_7">Council 7 Year</option>
         <option value="ast">AST</option>
@@ -58,7 +68,14 @@
     </div>
     <div class="form-group">
       <label for="monthly_rent">Monthly rent (£)</label>
-      <input type="number" id="monthly_rent" name="monthly_rent" step="0.01" min="0" />
+      <input
+        type="number"
+        id="monthly_rent"
+        name="monthly_rent"
+        step="0.01"
+        min="0"
+        required
+      />
     </div>
     <div class="form-group">
       <label for="indexation_type">Indexation type</label>
@@ -124,12 +141,17 @@
     const rentPercentGroup = document.getElementById("rent_percent_group");
     const rentPercentInput = document.getElementById("monthly_rent_percent");
     const monthlyRentInput = document.getElementById("monthly_rent");
-    const propertyValueInput = document.getElementById("value");
+    const propertyValueInput = document.getElementById("purchase_price");
     const leaseTypeSelect = document.getElementById("lease_type");
     const leaseStartInput = document.getElementById("lease_start");
     const leaseEndInput = document.getElementById("lease_end");
     const hasMortgageSelect = document.getElementById("has_mortgage");
     const mortgageFields = document.getElementById("mortgage_fields");
+    const lenderInput = document.getElementById("lender_name");
+    const loanAmountInput = document.getElementById("loan_amount");
+    const interestRateInput = document.getElementById("interest_rate");
+    const repaymentTypeSelect = document.getElementById("repayment_type");
+    const mortgageTermInput = document.getElementById("mortgage_term");
 
     document.getElementById("postcode").addEventListener("change", async function () {
       const postcode = this.value.trim();
@@ -215,8 +237,99 @@
     leaseStartInput.addEventListener("change", updateLeaseEnd);
 
     hasMortgageSelect.addEventListener("change", () => {
-      mortgageFields.style.display =
-        hasMortgageSelect.value === "yes" ? "grid" : "none";
+      const hasMortgage = hasMortgageSelect.value === "yes";
+      mortgageFields.style.display = hasMortgage ? "grid" : "none";
+      [
+        lenderInput,
+        loanAmountInput,
+        interestRateInput,
+        repaymentTypeSelect,
+        mortgageTermInput,
+      ].forEach((el) => {
+        if (hasMortgage) el.setAttribute("required", "required");
+        else el.removeAttribute("required");
+      });
+    });
+
+    hasMortgageSelect.dispatchEvent(new Event("change"));
+
+    document.getElementById("property_form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const postcode = document.getElementById("postcode").value.trim();
+      const address = addressSelect.value;
+      const purchasePrice = parseFloat(propertyValueInput.value);
+      const acquisitionDate = document
+        .getElementById("acquisition_date")
+        .value;
+      const leaseType = leaseTypeSelect.value;
+      const monthlyRent = parseFloat(monthlyRentInput.value);
+      const hasMortgage = hasMortgageSelect.value === "yes";
+
+      // Basic validation for required numeric fields
+      if (
+        !postcode ||
+        !address ||
+        !acquisitionDate ||
+        !leaseType ||
+        isNaN(purchasePrice) ||
+        purchasePrice <= 0 ||
+        isNaN(monthlyRent) ||
+        monthlyRent <= 0
+      ) {
+        alert("Please complete all required fields with valid values.");
+        return;
+      }
+
+      if (
+        hasMortgage &&
+        (isNaN(parseFloat(loanAmountInput.value)) ||
+          parseFloat(loanAmountInput.value) <= 0 ||
+          isNaN(parseFloat(interestRateInput.value)) ||
+          parseFloat(interestRateInput.value) <= 0 ||
+          isNaN(parseFloat(mortgageTermInput.value)) ||
+          parseFloat(mortgageTermInput.value) <= 0)
+      ) {
+        alert("Please provide positive numbers for mortgage details.");
+        return;
+      }
+
+      const payload = {
+        postcode,
+        address,
+        name: nameInput.value,
+        purchase_price: purchasePrice,
+        acquisition_date: acquisitionDate,
+        type: document.getElementById("type").value,
+        lease_type: leaseType,
+        monthly_rent: monthlyRent,
+        has_mortgage: hasMortgage,
+        lender_name: hasMortgage ? lenderInput.value : null,
+        loan_amount: hasMortgage ? parseFloat(loanAmountInput.value) || null : null,
+        interest_rate: hasMortgage
+          ? parseFloat(interestRateInput.value) || null
+          : null,
+        repayment_type: hasMortgage ? repaymentTypeSelect.value : null,
+        mortgage_term: hasMortgage
+          ? parseFloat(mortgageTermInput.value) || null
+          : null,
+      };
+
+      try {
+        const response = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (response.ok) {
+          alert("Property saved successfully!");
+          window.location.href = "/properties";
+        } else {
+          alert("Failed to save property.");
+        }
+      } catch (err) {
+        alert("Error saving property.");
+      }
     });
   </script>
 {% endblock %}
