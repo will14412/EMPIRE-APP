@@ -51,6 +51,22 @@
         <p class="value empty-state">No data</p>
       {% endif %}
     </div>
+    <div class="card">
+      <h2>Refi Ready</h2>
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>LTV</th>
+            <th>DSCR</th>
+            <th>Est. Cash-Out</th>
+          </tr>
+        </thead>
+        <tbody id="refi-table-body">
+          <tr><td colspan="4" class="no-data">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -58,6 +74,34 @@
         el.textContent = el.dataset.value;
         el.classList.remove('skeleton');
       });
+
+      fetch('/refi/eligibility?company_id=1&limit=5&sort=-cash_out')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById('refi-table-body');
+          if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="no-data">No properties</td></tr>';
+            return;
+          }
+          tbody.innerHTML = '';
+          data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `\
+              <td>${item.address}</td>
+              <td>${(item.ltv * 100).toFixed(0)}%</td>
+              <td>${Number(item.dscr).toFixed(2)}</td>
+              <td>£${Number(item.cash_out).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            `;
+            tr.addEventListener('click', () => {
+              window.location.href = '/properties/' + item.id;
+            });
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(() => {
+          const tbody = document.getElementById('refi-table-body');
+          tbody.innerHTML = '<tr><td colspan="4" class="no-data">Failed to load</td></tr>';
+        });
     });
   </script>
 {% endblock %}

@@ -126,6 +126,14 @@ body {
   border-bottom: 1px solid #e5e9f2;
 }
 
+.property-table tbody tr {
+  cursor: pointer;
+}
+
+.property-table tbody tr:hover {
+  background-color: #f0f2f5;
+}
+
 .no-data {
   text-align: center;
   padding: 2rem 0;
