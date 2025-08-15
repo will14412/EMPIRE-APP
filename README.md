@@ -11,14 +11,14 @@ The frontend is server‑rendered using Jinja2 templates and includes a custom s
 
 ## Running locally with Docker
 
-Ensure you have Docker installed.  From within the `property_planner` directory run:
+Ensure you have Docker installed.  From within the `empire_app` directory run:
 
 ```bash
 # Build the Docker image
-docker build -t property_planner .
+docker build -t empire_app .
 
 # Start the application
-docker run -it --rm -p 8000:8000 property_planner
+docker run -it --rm -p 8000:8000 empire_app
 ```
 
 Alternatively, use the provided docker‑compose configuration:
@@ -27,12 +27,12 @@ Alternatively, use the provided docker‑compose configuration:
 docker-compose up --build
 ```
 
-The web app will be available at <http://localhost:8000>.  The first run will create a SQLite database file (`property_planner.db`) in the container; it persists across restarts when using the mounted volume in `docker-compose.yml`.
+The web app will be available at <http://localhost:8000>.  The first run will create a SQLite database file (`empire_app.db`) in the container; it persists across restarts when using the mounted volume in `docker-compose.yml`.
 
 ## Project structure
 
 ```text
-property_planner/
+empire_app/
 ├── app/
 │   ├── __init__.py            # Makes the app package importable
 │   ├── main.py                # FastAPI application instance and routes
