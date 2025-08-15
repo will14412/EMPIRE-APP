@@ -8,8 +8,8 @@ from . import models, database, crud, schemas
 from .routers import refinancing, acquisition, stats
 
 
-# Create database tables on startup if they don't already exist.
-models.Base.metadata.create_all(bind=database.engine)
+# Create database tables and upgrade schema if needed on startup.
+database.init_db()
 
 # Instantiate the FastAPI application.
 app = FastAPI(title="Property Planner")
