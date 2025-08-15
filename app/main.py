@@ -83,6 +83,42 @@ def add_property(
     return RedirectResponse(url="/properties", status_code=303)
 
 
+@app.get("/properties/{property_id}/edit", response_class=HTMLResponse)
+def edit_property_form(property_id: int, request: Request, db: Session = Depends(get_db)):
+    """Render a form pre-populated with an existing property's data."""
+    property_obj = crud.get_property(db, property_id)
+    if not property_obj:
+        return RedirectResponse(url="/properties", status_code=303)
+    return templates.TemplateResponse(
+        "edit_property.html", {"request": request, "property": property_obj}
+    )
+
+
+@app.post("/properties/{property_id}/edit")
+def update_property(
+    property_id: int,
+    request: Request,
+    name: str = Form(...),
+    value: float = Form(...),
+    type: str = Form(...),
+    address: str = Form(""),
+    db: Session = Depends(get_db),
+):
+    """Update an existing property and redirect to the list."""
+    property_in = schemas.PropertyCreate(
+        name=name, value=value, type=schemas.PropertyType(type), address=address
+    )
+    crud.update_property(db, property_id, property_in)
+    return RedirectResponse(url="/properties", status_code=303)
+
+
+@app.post("/properties/{property_id}/delete")
+def delete_property(property_id: int, db: Session = Depends(get_db)):
+    """Delete a property and redirect to the list."""
+    crud.delete_property(db, property_id)
+    return RedirectResponse(url="/properties", status_code=303)
+
+
 # Include placeholder routers for future functionality.
 app.include_router(refinancing.router)
 app.include_router(acquisition.router)
