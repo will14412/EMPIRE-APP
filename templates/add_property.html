@@ -56,21 +56,36 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="rent_input_type">Monthly rent input</label>
+      <label for="rent_input_type">Rent input</label>
       <select id="rent_input_type">
         <option value="currency">£</option>
         <option value="percent">%</option>
       </select>
     </div>
-    <div class="form-group" id="rent_percent_group" style="display: none;">
-      <label for="monthly_rent_percent">Monthly rent (%)</label>
-      <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
+    <div id="rent_percent_container" style="display: none; gap: 1rem;">
+      <div class="form-group" style="flex: 1;">
+        <label for="yearly_rent_percent">Yearly rent (% of PV)</label>
+        <input type="number" id="yearly_rent_percent" step="0.01" min="0" disabled />
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label for="monthly_rent_calculated">Monthly rent (yearly / 12)</label>
+        <input
+          type="number"
+          id="monthly_rent_calculated"
+          name="monthly_rent"
+          step="0.01"
+          min="0"
+          readonly
+          disabled
+          required
+        />
+      </div>
     </div>
-    <div class="form-group">
-      <label for="monthly_rent">Monthly rent (£)</label>
+    <div class="form-group" id="monthly_rent_currency_group">
+      <label for="monthly_rent_currency">Monthly rent (£)</label>
       <input
         type="number"
-        id="monthly_rent"
+        id="monthly_rent_currency"
         name="monthly_rent"
         step="0.01"
         min="0"
@@ -138,9 +153,17 @@
     const addressSelect = document.getElementById("address");
     const nameInput = document.getElementById("name");
     const rentInputType = document.getElementById("rent_input_type");
-    const rentPercentGroup = document.getElementById("rent_percent_group");
-    const rentPercentInput = document.getElementById("monthly_rent_percent");
-    const monthlyRentInput = document.getElementById("monthly_rent");
+    const rentPercentContainer = document.getElementById("rent_percent_container");
+    const rentPercentInput = document.getElementById("yearly_rent_percent");
+    const monthlyRentCalculatedInput = document.getElementById(
+      "monthly_rent_calculated"
+    );
+    const monthlyRentCurrencyGroup = document.getElementById(
+      "monthly_rent_currency_group"
+    );
+    const monthlyRentCurrencyInput = document.getElementById(
+      "monthly_rent_currency"
+    );
     const propertyValueInput = document.getElementById("purchase_price");
     const leaseTypeSelect = document.getElementById("lease_type");
     const leaseStartInput = document.getElementById("lease_start");
@@ -193,12 +216,18 @@
 
     rentInputType.addEventListener("change", () => {
       if (rentInputType.value === "percent") {
-        rentPercentGroup.style.display = "flex";
-        monthlyRentInput.readOnly = true;
-        monthlyRentInput.value = "";
+        rentPercentContainer.style.display = "flex";
+        rentPercentInput.disabled = false;
+        monthlyRentCalculatedInput.disabled = false;
+        monthlyRentCalculatedInput.value = "";
+        monthlyRentCurrencyGroup.style.display = "none";
+        monthlyRentCurrencyInput.disabled = true;
       } else {
-        rentPercentGroup.style.display = "none";
-        monthlyRentInput.readOnly = false;
+        rentPercentContainer.style.display = "none";
+        rentPercentInput.disabled = true;
+        monthlyRentCalculatedInput.disabled = true;
+        monthlyRentCurrencyGroup.style.display = "flex";
+        monthlyRentCurrencyInput.disabled = false;
       }
     });
 
@@ -206,9 +235,10 @@
       const value = parseFloat(propertyValueInput.value);
       const percent = parseFloat(rentPercentInput.value);
       if (!isNaN(value) && !isNaN(percent)) {
-        monthlyRentInput.value = (value * (percent / 100)).toFixed(2);
+        const yearlyRent = value * (percent / 100);
+        monthlyRentCalculatedInput.value = (yearlyRent / 12).toFixed(2);
       } else {
-        monthlyRentInput.value = "";
+        monthlyRentCalculatedInput.value = "";
       }
     }
 
@@ -263,7 +293,11 @@
         .getElementById("acquisition_date")
         .value;
       const leaseType = leaseTypeSelect.value;
-      const monthlyRent = parseFloat(monthlyRentInput.value);
+      const monthlyRent = parseFloat(
+        rentInputType.value === "percent"
+          ? monthlyRentCalculatedInput.value
+          : monthlyRentCurrencyInput.value
+      );
       const hasMortgage = hasMortgageSelect.value === "yes";
 
       // Basic validation for required numeric fields
