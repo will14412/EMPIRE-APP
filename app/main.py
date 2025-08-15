@@ -55,24 +55,14 @@ def add_property_form(request: Request):
 
 
 @app.post("/properties/add")
-def add_property(
-    request: Request,
-    name: str = Form(...),
-    value: float = Form(...),
-    type: str = Form(...),
-    address: str = Form(""),
-    db: Session = Depends(get_db),
-):
+async def add_property(request: Request, db: Session = Depends(get_db)):
     """Process form submission to create a new property and redirect to the list."""
-    # Validate and create a new property record.
-    property_in = schemas.PropertyCreate(
-        name=name,
-        value=value,
-        type=schemas.PropertyType(type),
-        address=address,
-    )
+    form = await request.form()
+    data = {k: (v if v != "" else None) for k, v in dict(form).items()}
+    if "has_mortgage" in data:
+        data["has_mortgage"] = data["has_mortgage"] in {"yes", "true", "on", "1"}
+    property_in = schemas.PropertyCreate(**data)
     crud.create_property(db, property_in)
-    # Redirect to the property list page after successful creation.
     return RedirectResponse(url="/properties", status_code=303)
 
 
@@ -99,19 +89,15 @@ def edit_property_form(property_id: int, request: Request, db: Session = Depends
 
 
 @app.post("/properties/{property_id}/edit")
-def update_property(
-    property_id: int,
-    request: Request,
-    name: str = Form(...),
-    value: float = Form(...),
-    type: str = Form(...),
-    address: str = Form(""),
-    db: Session = Depends(get_db),
+async def update_property(
+    property_id: int, request: Request, db: Session = Depends(get_db)
 ):
     """Update an existing property and redirect to the list."""
-    property_in = schemas.PropertyCreate(
-        name=name, value=value, type=schemas.PropertyType(type), address=address
-    )
+    form = await request.form()
+    data = {k: (v if v != "" else None) for k, v in dict(form).items()}
+    if "has_mortgage" in data:
+        data["has_mortgage"] = data["has_mortgage"] in {"yes", "true", "on", "1"}
+    property_in = schemas.PropertyCreate(**data)
     crud.update_property(db, property_id, property_in)
     return RedirectResponse(url="/properties", status_code=303)
 
