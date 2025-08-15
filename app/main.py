@@ -83,6 +83,17 @@ def add_property(
     return RedirectResponse(url="/properties", status_code=303)
 
 
+@app.get("/properties/{property_id}", response_class=HTMLResponse)
+def view_property(property_id: int, request: Request, db: Session = Depends(get_db)):
+    """Display a single property's details."""
+    property_obj = crud.get_property(db, property_id)
+    if not property_obj:
+        return RedirectResponse(url="/properties", status_code=303)
+    return templates.TemplateResponse(
+        "view_property.html", {"request": request, "property": property_obj}
+    )
+
+
 @app.get("/properties/{property_id}/edit", response_class=HTMLResponse)
 def edit_property_form(property_id: int, request: Request, db: Session = Depends(get_db)):
     """Render a form pre-populated with an existing property's data."""
