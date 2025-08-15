@@ -3,116 +3,51 @@
 {% block content %}
   <h1 class="page-title">Add New Property</h1>
   <form method="post" class="form" id="property_form">
-
-    <div class="form-group">
-      <label for="postcode">Postcode</label>
-      <input
-        type="text"
-        id="postcode"
-        name="postcode"
-        placeholder="Enter postcode"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="address">Address</label>
-      <select id="address" name="address" required>
-        <option value="">Select an address</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" required />
-    </div>
-    <div class="form-group">
-      <label for="purchase_price">Purchase price (£)</label>
-      <input
-        type="number"
-        id="purchase_price"
-        name="purchase_price"
-        step="0.01"
-        min="0"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="acquisition_date">Acquisition date</label>
-      <input type="date" id="acquisition_date" name="acquisition_date" required />
-    </div>
-    <div class="form-group">
-      <label for="type">Type</label>
-      <select id="type" name="type" required>
-        <option value="personal">Personal</option>
-        <option value="company">Company</option>
-      </select>
-    </div>
-    <h2 class="section-title">Lease</h2>
-    <div class="form-group">
-      <label for="lease_type">Lease type</label>
-      <select id="lease_type" name="lease_type" required>
-        <option value="council_20">Council 20 Year</option>
-        <option value="council_7">Council 7 Year</option>
-        <option value="ast">AST</option>
-        <option value="hmo">HMO</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="rent_input_type">Rent input</label>
-      <select id="rent_input_type">
-        <option value="currency">£</option>
-        <option value="percent">%</option>
-      </select>
-    </div>
-    <div id="rent_percent_container" style="display: none; gap: 1rem;">
-      <div class="form-group" style="flex: 1;">
-        <label for="yearly_rent_percent">Yearly rent (% of PV)</label>
-        <input type="number" id="yearly_rent_percent" step="0.01" min="0" disabled />
-      </div>
-      <div class="form-group" style="flex: 1;">
-        <label for="monthly_rent_calculated">Monthly rent (yearly / 12)</label>
+    <details class="form-section" open>
+      <summary>Property Details</summary>
+      <div class="form-group">
+        <label for="postcode">Postcode</label>
         <input
-          type="number"
-          id="monthly_rent_calculated"
-          name="monthly_rent"
-          step="0.01"
-          min="0"
-          readonly
-          disabled
+          type="text"
+          id="postcode"
+          name="postcode"
+          placeholder="Enter postcode"
           required
         />
       </div>
-    </div>
-    <div class="form-group" id="monthly_rent_currency_group">
-      <label for="monthly_rent_currency">Monthly rent (£)</label>
-      <input
-        type="number"
-        id="monthly_rent_currency"
-        name="monthly_rent"
-        step="0.01"
-        min="0"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="indexation_type">Indexation type</label>
-      <select id="indexation_type" name="indexation_type">
-        <option value="none">None</option>
-        <option value="fixed">Fixed</option>
-        <option value="cpi">CPI</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="indexation_rate">Indexation rate (%)</label>
-      <input type="number" id="indexation_rate" name="indexation_rate" step="0.01" min="0" />
-    </div>
-    <div class="form-group">
-      <label for="lease_start">Lease start date</label>
-      <input type="date" id="lease_start" name="lease_start" />
-    </div>
-    <div class="form-group">
-      <label for="lease_end">Lease end date</label>
-      <input type="date" id="lease_end" name="lease_end" />
-    </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <select id="address" name="address" required>
+          <option value="">Select an address</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="purchase_price">Purchase price (£)</label>
+        <input
+          type="number"
+          id="purchase_price"
+          name="purchase_price"
+          step="0.01"
+          min="0"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="acquisition_date">Acquisition date</label>
+        <input type="date" id="acquisition_date" name="acquisition_date" required />
+      </div>
+      <div class="form-group">
+        <label for="type">Type</label>
+        <select id="type" name="type" required>
+          <option value="personal">Personal</option>
+          <option value="company">Company</option>
+        </select>
+      </div>
+    </details>
 
     <details class="form-section">
       <summary>Lease Details</summary>
@@ -215,17 +150,9 @@
     const addressSelect = document.getElementById("address");
     const nameInput = document.getElementById("name");
     const rentInputType = document.getElementById("rent_input_type");
-    const rentPercentContainer = document.getElementById("rent_percent_container");
-    const rentPercentInput = document.getElementById("yearly_rent_percent");
-    const monthlyRentCalculatedInput = document.getElementById(
-      "monthly_rent_calculated"
-    );
-    const monthlyRentCurrencyGroup = document.getElementById(
-      "monthly_rent_currency_group"
-    );
-    const monthlyRentCurrencyInput = document.getElementById(
-      "monthly_rent_currency"
-    );
+    const rentPercentGroup = document.getElementById("rent_percent_group");
+    const rentPercentInput = document.getElementById("monthly_rent_percent");
+    const monthlyRentInput = document.getElementById("monthly_rent");
     const propertyValueInput = document.getElementById("purchase_price");
     const leaseTypeSelect = document.getElementById("lease_type");
     const leaseStartInput = document.getElementById("lease_start");
@@ -278,18 +205,12 @@
 
     rentInputType.addEventListener("change", () => {
       if (rentInputType.value === "percent") {
-        rentPercentContainer.style.display = "flex";
-        rentPercentInput.disabled = false;
-        monthlyRentCalculatedInput.disabled = false;
-        monthlyRentCalculatedInput.value = "";
-        monthlyRentCurrencyGroup.style.display = "none";
-        monthlyRentCurrencyInput.disabled = true;
+        rentPercentGroup.style.display = "flex";
+        monthlyRentInput.readOnly = true;
+        monthlyRentInput.value = "";
       } else {
-        rentPercentContainer.style.display = "none";
-        rentPercentInput.disabled = true;
-        monthlyRentCalculatedInput.disabled = true;
-        monthlyRentCurrencyGroup.style.display = "flex";
-        monthlyRentCurrencyInput.disabled = false;
+        rentPercentGroup.style.display = "none";
+        monthlyRentInput.readOnly = false;
       }
     });
 
@@ -297,10 +218,9 @@
       const value = parseFloat(propertyValueInput.value);
       const percent = parseFloat(rentPercentInput.value);
       if (!isNaN(value) && !isNaN(percent)) {
-        const yearlyRent = value * (percent / 100);
-        monthlyRentCalculatedInput.value = (yearlyRent / 12).toFixed(2);
+        monthlyRentInput.value = (value * (percent / 100)).toFixed(2);
       } else {
-        monthlyRentCalculatedInput.value = "";
+        monthlyRentInput.value = "";
       }
     }
 
@@ -355,11 +275,7 @@
         .getElementById("acquisition_date")
         .value;
       const leaseType = leaseTypeSelect.value;
-      const monthlyRent = parseFloat(
-        rentInputType.value === "percent"
-          ? monthlyRentCalculatedInput.value
-          : monthlyRentCurrencyInput.value
-      );
+      const monthlyRent = parseFloat(monthlyRentInput.value);
       const hasMortgage = hasMortgageSelect.value === "yes";
 
       // Basic validation for required numeric fields
