@@ -35,12 +35,101 @@
         <option value="company">Company</option>
       </select>
     </div>
+    <h2 class="section-title">Lease</h2>
+    <div class="form-group">
+      <label for="lease_type">Lease type</label>
+      <select id="lease_type" name="lease_type">
+        <option value="council_20">Council 20 Year</option>
+        <option value="council_7">Council 7 Year</option>
+        <option value="ast">AST</option>
+        <option value="hmo">HMO</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="rent_input_type">Monthly rent input</label>
+      <select id="rent_input_type">
+        <option value="currency">£</option>
+        <option value="percent">%</option>
+      </select>
+    </div>
+    <div class="form-group" id="rent_percent_group" style="display: none;">
+      <label for="monthly_rent_percent">Monthly rent (%)</label>
+      <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label for="monthly_rent">Monthly rent (£)</label>
+      <input type="number" id="monthly_rent" name="monthly_rent" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label for="indexation_type">Indexation type</label>
+      <select id="indexation_type" name="indexation_type">
+        <option value="none">None</option>
+        <option value="fixed">Fixed</option>
+        <option value="cpi">CPI</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="indexation_rate">Indexation rate (%)</label>
+      <input type="number" id="indexation_rate" name="indexation_rate" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label for="lease_start">Lease start date</label>
+      <input type="date" id="lease_start" name="lease_start" />
+    </div>
+    <div class="form-group">
+      <label for="lease_end">Lease end date</label>
+      <input type="date" id="lease_end" name="lease_end" />
+    </div>
+
+    <h2 class="section-title">Mortgage</h2>
+    <div class="form-group">
+      <label for="has_mortgage">Has mortgage?</label>
+      <select id="has_mortgage" name="has_mortgage">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+    </div>
+    <div id="mortgage_fields" style="display: none; gap: 1rem;">
+      <div class="form-group">
+        <label for="lender_name">Lender name</label>
+        <input type="text" id="lender_name" name="lender_name" />
+      </div>
+      <div class="form-group">
+        <label for="loan_amount">Loan amount (£)</label>
+        <input type="number" id="loan_amount" name="loan_amount" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="interest_rate">Interest rate (%)</label>
+        <input type="number" id="interest_rate" name="interest_rate" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="repayment_type">Repayment type</label>
+        <select id="repayment_type" name="repayment_type">
+          <option value="interest_only">Interest-only</option>
+          <option value="repayment">Repayment</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="mortgage_term">Term (years)</label>
+        <input type="number" id="mortgage_term" name="mortgage_term" min="0" />
+      </div>
+    </div>
     <button type="submit" class="btn">Add Property</button>
   </form>
   <script>
     const GET_ADDRESS_API_KEY = "MR3OmMfdukGPgl0gW_Ztxw44533"; // Replace with your API key
     const addressSelect = document.getElementById("address");
     const nameInput = document.getElementById("name");
+    const rentInputType = document.getElementById("rent_input_type");
+    const rentPercentGroup = document.getElementById("rent_percent_group");
+    const rentPercentInput = document.getElementById("monthly_rent_percent");
+    const monthlyRentInput = document.getElementById("monthly_rent");
+    const propertyValueInput = document.getElementById("value");
+    const leaseTypeSelect = document.getElementById("lease_type");
+    const leaseStartInput = document.getElementById("lease_start");
+    const leaseEndInput = document.getElementById("lease_end");
+    const hasMortgageSelect = document.getElementById("has_mortgage");
+    const mortgageFields = document.getElementById("mortgage_fields");
 
     document.getElementById("postcode").addEventListener("change", async function () {
       const postcode = this.value.trim();
@@ -78,6 +167,56 @@
       const selected = addressSelect.value;
       const firstPart = selected.split(",")[0].trim();
       nameInput.value = firstPart;
+    });
+
+    rentInputType.addEventListener("change", () => {
+      if (rentInputType.value === "percent") {
+        rentPercentGroup.style.display = "flex";
+        monthlyRentInput.readOnly = true;
+        monthlyRentInput.value = "";
+      } else {
+        rentPercentGroup.style.display = "none";
+        monthlyRentInput.readOnly = false;
+      }
+    });
+
+    function updateMonthlyRent() {
+      const value = parseFloat(propertyValueInput.value);
+      const percent = parseFloat(rentPercentInput.value);
+      if (!isNaN(value) && !isNaN(percent)) {
+        monthlyRentInput.value = (value * (percent / 100)).toFixed(2);
+      } else {
+        monthlyRentInput.value = "";
+      }
+    }
+
+    rentPercentInput.addEventListener("input", updateMonthlyRent);
+    propertyValueInput.addEventListener("input", () => {
+      if (rentInputType.value === "percent") updateMonthlyRent();
+    });
+
+    function updateLeaseEnd() {
+      const startDate = new Date(leaseStartInput.value);
+      if (isNaN(startDate)) {
+        leaseEndInput.value = "";
+        return;
+      }
+      let years = 0;
+      if (leaseTypeSelect.value === "council_20") years = 20;
+      else if (leaseTypeSelect.value === "council_7") years = 7;
+      if (years > 0) {
+        const endDate = new Date(startDate);
+        endDate.setFullYear(endDate.getFullYear() + years);
+        leaseEndInput.value = endDate.toISOString().split("T")[0];
+      }
+    }
+
+    leaseTypeSelect.addEventListener("change", updateLeaseEnd);
+    leaseStartInput.addEventListener("change", updateLeaseEnd);
+
+    hasMortgageSelect.addEventListener("change", () => {
+      mortgageFields.style.display =
+        hasMortgageSelect.value === "yes" ? "grid" : "none";
     });
   </script>
 {% endblock %}
