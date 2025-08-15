@@ -132,20 +132,22 @@
           <option value="percent">%</option>
         </select>
       </div>
-      <div class="form-group" id="rent_percent_group" style="display: none;">
-        <label for="monthly_rent_percent">Monthly rent (%)</label>
-        <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="monthly_rent">Monthly rent (£)</label>
-        <input
-          type="number"
-          id="monthly_rent"
-          name="monthly_rent"
-          step="0.01"
-          min="0"
-          required
-        />
+      <div id="rent_container" class="dual-input">
+        <div class="form-group" id="rent_percent_group" style="display: none; flex: 1;">
+          <label for="monthly_rent_percent">Monthly rent (%)</label>
+          <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label for="monthly_rent">Monthly rent (£)</label>
+          <input
+            type="number"
+            id="monthly_rent"
+            name="monthly_rent"
+            step="0.01"
+            min="0"
+            required
+          />
+        </div>
       </div>
       <div class="form-group">
         <label for="indexation_type">Indexation type</label>
