@@ -50,8 +50,14 @@ def delete_property(db: Session, property_id: int):
     return db_property
 
 
-def portfolio_summary(db: Session):
-    """Compute summary statistics for the dashboard."""
+def portfolio_summary(db: Session, period: str = "month"):
+    """Compute summary statistics for the dashboard.
+
+    Currently only property counts and company portfolio value are persisted.
+    Other metrics such as personal portfolio value, company cash and income are
+    placeholders until the relevant data models are implemented.
+    """
+
     personal_count = (
         db.query(models.Property)
         .filter(models.Property.type == models.PropertyType.personal)
@@ -62,16 +68,20 @@ def portfolio_summary(db: Session):
         .filter(models.Property.type == models.PropertyType.company)
         .count()
     )
-    total_value = db.query(func.sum(models.Property.value)).scalar() or 0.0
     company_value = (
         db.query(func.sum(models.Property.value))
         .filter(models.Property.type == models.PropertyType.company)
         .scalar()
         or 0.0
     )
+
     return {
+        "personal_portfolio_value": 0.0,
+        "company_value": company_value,
+        "company_cash": 0.0,
         "personal_count": personal_count,
         "company_count": company_count,
-        "total_value": total_value,
-        "company_value": company_value,
+        "gross_income": 0.0,
+        "net_income": 0.0,
+        "period": period,
     }
