@@ -3,6 +3,7 @@
 {% block content %}
   <h1 class="page-title">Add New Property</h1>
   <form method="post" class="form" id="property_form">
+
     <div class="form-group">
       <label for="postcode">Postcode</label>
       <input
@@ -113,40 +114,101 @@
       <input type="date" id="lease_end" name="lease_end" />
     </div>
 
-    <h2 class="section-title">Mortgage</h2>
-    <div class="form-group">
-      <label for="has_mortgage">Has mortgage?</label>
-      <select id="has_mortgage" name="has_mortgage">
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-      </select>
-    </div>
-    <div id="mortgage_fields" style="display: none; gap: 1rem;">
+    <details class="form-section">
+      <summary>Lease Details</summary>
       <div class="form-group">
-        <label for="lender_name">Lender name</label>
-        <input type="text" id="lender_name" name="lender_name" />
-      </div>
-      <div class="form-group">
-        <label for="loan_amount">Loan amount (£)</label>
-        <input type="number" id="loan_amount" name="loan_amount" step="0.01" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="interest_rate">Interest rate (%)</label>
-        <input type="number" id="interest_rate" name="interest_rate" step="0.01" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="repayment_type">Repayment type</label>
-        <select id="repayment_type" name="repayment_type">
-          <option value="interest_only">Interest-only</option>
-          <option value="repayment">Repayment</option>
+        <label for="lease_type">Lease type</label>
+        <select id="lease_type" name="lease_type" required>
+          <option value="council_20">Council 20 Year</option>
+          <option value="council_7">Council 7 Year</option>
+          <option value="ast">AST</option>
+          <option value="hmo">HMO</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="mortgage_term">Term (years)</label>
-        <input type="number" id="mortgage_term" name="mortgage_term" min="0" />
+        <label for="rent_input_type">Monthly rent input</label>
+        <select id="rent_input_type">
+          <option value="currency">£</option>
+          <option value="percent">%</option>
+        </select>
       </div>
+      <div class="form-group" id="rent_percent_group" style="display: none;">
+        <label for="monthly_rent_percent">Monthly rent (%)</label>
+        <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="monthly_rent">Monthly rent (£)</label>
+        <input
+          type="number"
+          id="monthly_rent"
+          name="monthly_rent"
+          step="0.01"
+          min="0"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="indexation_type">Indexation type</label>
+        <select id="indexation_type" name="indexation_type">
+          <option value="none">None</option>
+          <option value="fixed">Fixed</option>
+          <option value="cpi">CPI</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="indexation_rate">Indexation rate (%)</label>
+        <input type="number" id="indexation_rate" name="indexation_rate" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="lease_start">Lease start date</label>
+        <input type="date" id="lease_start" name="lease_start" />
+      </div>
+      <div class="form-group">
+        <label for="lease_end">Lease end date</label>
+        <input type="date" id="lease_end" name="lease_end" />
+      </div>
+    </details>
+
+    <details class="form-section">
+      <summary>Mortgage Details</summary>
+      <div class="form-group">
+        <label for="has_mortgage">Has mortgage?</label>
+        <select id="has_mortgage" name="has_mortgage">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      <div id="mortgage_fields" style="display: none; gap: 1rem;">
+        <div class="form-group">
+          <label for="lender_name">Lender name</label>
+          <input type="text" id="lender_name" name="lender_name" />
+        </div>
+        <div class="form-group">
+          <label for="loan_amount">Loan amount (£)</label>
+          <input type="number" id="loan_amount" name="loan_amount" step="0.01" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="interest_rate">Interest rate (%)</label>
+          <input type="number" id="interest_rate" name="interest_rate" step="0.01" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="repayment_type">Repayment type</label>
+          <select id="repayment_type" name="repayment_type">
+            <option value="interest_only">Interest-only</option>
+            <option value="repayment">Repayment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mortgage_term">Term (years)</label>
+          <input type="number" id="mortgage_term" name="mortgage_term" min="0" />
+        </div>
+      </div>
+    </details>
+
+    <div class="form-actions">
+      <a href="/properties" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn">Save Property</button>
     </div>
-    <button type="submit" class="btn">Add Property</button>
   </form>
   <script>
     const GET_ADDRESS_API_KEY = "MR3OmMfdukGPgl0gW_Ztxw44533"; // Replace with your API key
