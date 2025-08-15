@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base
+import os
 
-# SQLite database URL; stored in a file for persistence.
-SQLALCHEMY_DATABASE_URL = "sqlite:///./property_planner.db"
+# Determine an absolute path to the SQLite database so the app uses
+# the same file regardless of the current working directory.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "property_planner.db")
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.abspath(DB_PATH)}"
 
 # For SQLite we need check_same_thread=False for thread safety with FastAPI.
 engine = create_engine(
