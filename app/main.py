@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from . import models, database, crud, schemas
-from .routers import refinancing, acquisition
+from .routers import refinancing, acquisition, stats
 
 
 # Create database tables on startup if they don't already exist.
@@ -130,5 +130,6 @@ def create_property_api(property_in: schemas.PropertyCreate, db: Session = Depen
     return crud.create_property(db, property_in)
 
 # Include placeholder routers for future functionality.
+app.include_router(stats.router)
 app.include_router(refinancing.router)
 app.include_router(acquisition.router)
