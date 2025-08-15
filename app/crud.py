@@ -11,12 +11,7 @@ def get_properties(db: Session, skip: int = 0, limit: int = 100):
 
 def create_property(db: Session, property_in: schemas.PropertyCreate):
     """Create and persist a new property."""
-    db_property = models.Property(
-        name=property_in.name,
-        value=property_in.value,
-        type=property_in.type,
-        address=property_in.address,
-    )
+    db_property = models.Property(**property_in.model_dump())
     db.add(db_property)
     db.commit()
     db.refresh(db_property)
@@ -32,10 +27,8 @@ def update_property(db: Session, property_id: int, property_in: schemas.Property
     """Update an existing property with new data."""
     db_property = get_property(db, property_id)
     if db_property:
-        db_property.name = property_in.name
-        db_property.value = property_in.value
-        db_property.type = property_in.type
-        db_property.address = property_in.address
+        for field, value in property_in.model_dump().items():
+            setattr(db_property, field, value)
         db.commit()
         db.refresh(db_property)
     return db_property
