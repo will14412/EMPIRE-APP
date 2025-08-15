@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.sql.sqltypes import Boolean, Float, Integer, String, Enum as SqlEnum
 import os
 
 # Determine an absolute path to the SQLite database so the app uses
@@ -21,46 +22,31 @@ Base = declarative_base()
 
 
 def init_db():
-    """Create tables and upgrade schema with new columns if missing."""
+    """Create tables and upgrade schema with any new columns."""
+    # Import inside the function to avoid circular imports with models -> database.
+    from .models import Property
+
     Base.metadata.create_all(bind=engine)
     inspector = inspect(engine)
-    existing_columns = {
-        column["name"] for column in inspector.get_columns("properties")
+    existing_columns = {col["name"] for col in inspector.get_columns("properties")}
+
+    # Determine columns defined on the Property model but missing in the database.
+    model_columns = {
+        c.name: c.type for c in Property.__table__.columns if c.name != "id"
     }
-    required_columns = {
-        "postcode",
-        "lease_type",
-        "rent_input_type",
-        "yearly_rent_percent",
-        "monthly_rent",
-        "indexation_type",
-        "indexation_rate",
-        "lease_start",
-        "lease_end",
-        "has_mortgage",
-        "lender_name",
-        "loan_amount",
-        "interest_rate",
-        "repayment_type",
-        "mortgage_term",
-    }
-    missing = required_columns - existing_columns
+    missing = {name: ctype for name, ctype in model_columns.items() if name not in existing_columns}
+
     if missing:
         with engine.begin() as conn:
-            for column in missing:
-                if column in {
-                    "postcode",
-                    "lease_type",
-                    "rent_input_type",
-                    "indexation_type",
-                    "lease_start",
-                    "lease_end",
-                    "lender_name",
-                    "repayment_type",
-                }:
-                    coltype = "TEXT"
-                elif column == "has_mortgage":
-                    coltype = "BOOLEAN"
+            for column, coltype in missing.items():
+                if isinstance(coltype, (String, SqlEnum)):
+                    sql_type = "TEXT"
+                elif isinstance(coltype, Boolean):
+                    sql_type = "BOOLEAN"
+                elif isinstance(coltype, Integer):
+                    sql_type = "INTEGER"
+                elif isinstance(coltype, Float):
+                    sql_type = "REAL"
                 else:
-                    coltype = "REAL"
-                conn.execute(text(f"ALTER TABLE properties ADD COLUMN {column} {coltype}"))
+                    sql_type = "TEXT"
+                conn.execute(text(f"ALTER TABLE properties ADD COLUMN {column} {sql_type}"))
