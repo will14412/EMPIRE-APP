@@ -4,6 +4,16 @@
   <h1 class="page-title">Add New Property</h1>
   <form action="/properties/add" method="post" class="form">
     <div class="form-group">
+      <label for="postcode">Postcode</label>
+      <input type="text" id="postcode" placeholder="Enter postcode" />
+    </div>
+    <div class="form-group">
+      <label for="address">Address</label>
+      <select id="address" name="address">
+        <option value="">Select an address</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label for="name">Name</label>
       <input type="text" id="name" name="name" required />
     </div>
@@ -25,50 +35,49 @@
         <option value="company">Company</option>
       </select>
     </div>
-    <div class="form-group">
-      <label for="postcode">Postcode</label>
-      <input type="text" id="postcode" placeholder="Enter postcode" />
-    </div>
-    <div class="form-group">
-      <label for="address">Address</label>
-      <select id="address" name="address">
-        <option value="">Select an address</option>
-      </select>
-    </div>
     <button type="submit" class="btn">Add Property</button>
   </form>
   <script>
     const GET_ADDRESS_API_KEY = "MR3OmMfdukGPgl0gW_Ztxw44533"; // Replace with your API key
-    document
-      .getElementById("postcode")
-      .addEventListener("change", async function () {
-        const postcode = this.value.trim();
-        const addressSelect = document.getElementById("address");
-        addressSelect.innerHTML = '<option value="">Loading...</option>';
-        if (!postcode) {
-          addressSelect.innerHTML = '<option value="">Select an address</option>';
-          return;
+    const addressSelect = document.getElementById("address");
+    const nameInput = document.getElementById("name");
+
+    document.getElementById("postcode").addEventListener("change", async function () {
+      const postcode = this.value.trim();
+      addressSelect.innerHTML = '<option value="">Loading...</option>';
+      if (!postcode) {
+        addressSelect.innerHTML = '<option value="">Select an address</option>';
+        return;
+      }
+      try {
+        const response = await fetch(
+          `https://api.getAddress.io/find/${encodeURIComponent(postcode)}?api-key=${GET_ADDRESS_API_KEY}`
+        );
+        if (!response.ok) {
+          throw new Error("Lookup failed");
         }
-        try {
-          const response = await fetch(
-            `https://api.getAddress.io/find/${encodeURIComponent(
-              postcode
-            )}?api-key=${GET_ADDRESS_API_KEY}`
-          );
-          if (!response.ok) {
-            throw new Error("Lookup failed");
-          }
-          const data = await response.json();
-          addressSelect.innerHTML = "";
-          data.addresses.forEach((addr) => {
-            const option = document.createElement("option");
-            option.value = addr;
-            option.textContent = addr;
-            addressSelect.appendChild(option);
-          });
-        } catch (err) {
-          addressSelect.innerHTML = '<option value="">No addresses found</option>';
-        }
-      });
+        const data = await response.json();
+        addressSelect.innerHTML = "";
+        data.addresses.forEach((addr) => {
+          const cleanedAddr = addr
+            .split(",")
+            .map((part) => part.trim())
+            .filter((part) => part)
+            .join(", ");
+          const option = document.createElement("option");
+          option.value = cleanedAddr;
+          option.textContent = cleanedAddr;
+          addressSelect.appendChild(option);
+        });
+      } catch (err) {
+        addressSelect.innerHTML = '<option value="">No addresses found</option>';
+      }
+    });
+
+    addressSelect.addEventListener("change", () => {
+      const selected = addressSelect.value;
+      const firstPart = selected.split(",")[0].trim();
+      nameInput.value = firstPart;
+    });
   </script>
 {% endblock %}
