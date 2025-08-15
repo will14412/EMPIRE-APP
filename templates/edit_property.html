@@ -196,8 +196,10 @@
     const repaymentTypeSelect = document.getElementById("repayment_type");
     const mortgageTermInput = document.getElementById("mortgage_term");
     const propertyId = {{ property.id }};
+    const savedAddress = {{ property.address | tojson }};
+    const postcodeInput = document.getElementById("postcode");
 
-    document.getElementById("postcode").addEventListener("change", async function () {
+    postcodeInput.addEventListener("change", async function () {
       const postcode = this.value.trim();
       addressSelect.innerHTML = '<option value="">Loading...</option>';
       if (!postcode) {
@@ -224,6 +226,14 @@
           option.textContent = cleanedAddr;
           addressSelect.appendChild(option);
         });
+        if (savedAddress) {
+          const match = Array.from(addressSelect.options).find(
+            (opt) => opt.value === savedAddress
+          );
+          if (match) {
+            match.selected = true;
+          }
+        }
       } catch (err) {
         addressSelect.innerHTML = '<option value="">No addresses found</option>';
       }
@@ -236,20 +246,13 @@
     });
 
     rentInputType.addEventListener("change", () => {
-      if (rentInputType.value === "percent") {
-        rentPercentContainer.style.display = "flex";
-        rentPercentInput.disabled = false;
-        monthlyRentCalculatedInput.disabled = false;
-        monthlyRentCalculatedInput.value = "";
-        monthlyRentCurrencyGroup.style.display = "none";
-        monthlyRentCurrencyInput.disabled = true;
-      } else {
-        rentPercentContainer.style.display = "none";
-        rentPercentInput.disabled = true;
-        monthlyRentCalculatedInput.disabled = true;
-        monthlyRentCurrencyGroup.style.display = "flex";
-        monthlyRentCurrencyInput.disabled = false;
-      }
+      const isPercent = rentInputType.value === "percent";
+      rentPercentContainer.style.display = isPercent ? "flex" : "none";
+      rentPercentInput.disabled = !isPercent;
+      monthlyRentCalculatedInput.disabled = !isPercent;
+      monthlyRentCurrencyGroup.style.display = isPercent ? "none" : "flex";
+      monthlyRentCurrencyInput.disabled = isPercent;
+      if (isPercent) updateMonthlyRent();
     });
 
     function updateMonthlyRent() {
@@ -305,6 +308,9 @@
     rentInputType.dispatchEvent(new Event("change"));
     leaseTypeSelect.dispatchEvent(new Event("change"));
     hasMortgageSelect.dispatchEvent(new Event("change"));
+    if (postcodeInput.value.trim()) {
+      postcodeInput.dispatchEvent(new Event("change"));
+    }
 
     document.getElementById("property_form").addEventListener("submit", async (e) => {
       e.preventDefault();
