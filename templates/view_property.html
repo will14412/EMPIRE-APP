@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block title %}{{ property.name }} – Property Planner{% endblock %}
+{% block content %}
+  <h1 class="page-title">{{ property.name }}</h1>
+
+  <details class="form-section" open>
+    <summary>Property Details</summary>
+    <p><strong>ID:</strong> {{ property.id }}</p>
+    <p><strong>Value:</strong> £{{ '{:,.2f}'.format(property.value) }}</p>
+    <p><strong>Type:</strong> {{ property.type.value }}</p>
+    <p><strong>Address:</strong> {{ property.address }}</p>
+  </details>
+
+  <details class="form-section">
+    <summary>Lease Details</summary>
+    {% if property.lease_type is defined %}
+      <p><strong>Lease Type:</strong> {{ property.lease_type }}</p>
+      {% if property.lease_start is defined %}<p><strong>Lease Start:</strong> {{ property.lease_start }}</p>{% endif %}
+      {% if property.lease_end is defined %}<p><strong>Lease End:</strong> {{ property.lease_end }}</p>{% endif %}
+    {% else %}
+      <p>No lease details available.</p>
+    {% endif %}
+  </details>
+
+  <details class="form-section">
+    <summary>Mortgage Details</summary>
+    {% if property.has_mortgage is defined and property.has_mortgage %}
+      {% if property.lender_name is defined %}<p><strong>Lender:</strong> {{ property.lender_name }}</p>{% endif %}
+      {% if property.loan_amount is defined %}<p><strong>Loan Amount:</strong> £{{ '{:,.2f}'.format(property.loan_amount) }}</p>{% endif %}
+      {% if property.interest_rate is defined %}<p><strong>Interest Rate:</strong> {{ property.interest_rate }}%</p>{% endif %}
+      {% if property.repayment_type is defined %}<p><strong>Repayment Type:</strong> {{ property.repayment_type }}</p>{% endif %}
+      {% if property.mortgage_term is defined %}<p><strong>Term:</strong> {{ property.mortgage_term }}</p>{% endif %}
+    {% else %}
+      <p>No mortgage details available.</p>
+    {% endif %}
+  </details>
+
+  <div class="form-actions">
+    <a href="/properties/{{ property.id }}/edit" class="btn">Edit</a>
+    <form action="/properties/{{ property.id }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete property?');">
+      <button type="submit" class="btn btn-secondary">Delete</button>
+    </form>
+  </div>
+{% endblock %}

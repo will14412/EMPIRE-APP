@@ -10,7 +10,7 @@
         <th>Value</th>
         <th>Type</th>
         <th>Address</th>
-        <th>Actions</th>
+        <th>View</th>
       </tr>
     </thead>
     <tbody>
@@ -22,10 +22,7 @@
         <td>{{ property.type.value }}</td>
         <td>{{ property.address }}</td>
         <td>
-          <a href="/properties/{{ property.id }}/edit" class="btn">Edit</a>
-          <form action="/properties/{{ property.id }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete property?');">
-            <button type="submit" class="btn btn-secondary">Delete</button>
-          </form>
+          <a href="/properties/{{ property.id }}" class="btn">View</a>
         </td>
       </tr>
       {% else %}
