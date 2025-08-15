@@ -228,3 +228,49 @@ body {
 .btn:hover {
   background-color: #3c5ecb;
 }
+
+/* Empty state text used within cards */
+.empty-state {
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+
+/* Simple loading skeleton for KPI cards */
+.skeleton {
+  background: linear-gradient(90deg, #eee, #ddd, #eee);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  color: transparent;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Toggle buttons for monthly/yearly income */
+.toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.toggle button {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #d1d9e6;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.toggle button.active {
+  background-color: #4e73df;
+  color: #ffffff;
+  border-color: #4e73df;
+}

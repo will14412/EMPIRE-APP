@@ -31,19 +31,12 @@ def get_db():
 
 
 @app.get("/", response_class=HTMLResponse)
-def read_dashboard(request: Request, db: Session = Depends(get_db)):
+def read_dashboard(
+    request: Request, period: str = "month", db: Session = Depends(get_db)
+):
     """Render the dashboard with portfolio summary statistics."""
-    summary = crud.portfolio_summary(db)
-    return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
-            "personal_count": summary["personal_count"],
-            "company_count": summary["company_count"],
-            "total_value": summary["total_value"],
-            "company_value": summary["company_value"],
-        },
-    )
+    summary = crud.portfolio_summary(db, period=period)
+    return templates.TemplateResponse("dashboard.html", {"request": request, **summary})
 
 
 @app.get("/properties", response_class=HTMLResponse)

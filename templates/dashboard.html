@@ -4,20 +4,60 @@
   <h1 class="page-title">Dashboard</h1>
   <div class="dashboard-cards">
     <div class="card">
-      <h2>Personal Properties</h2>
-      <p class="value">{{ personal_count }}</p>
-    </div>
-    <div class="card">
-      <h2>Company Properties</h2>
-      <p class="value">{{ company_count }}</p>
-    </div>
-    <div class="card">
-      <h2>Total Portfolio Value</h2>
-      <p class="value">£{{ '{:,.2f}'.format(total_value) }}</p>
+      <h2>Personal Portfolio Value</h2>
+      <p class="value skeleton" data-value="£0.00"></p>
     </div>
     <div class="card">
       <h2>Company Portfolio Value</h2>
-      <p class="value">£{{ '{:,.2f}'.format(company_value) }}</p>
+      {% if company_value %}
+        <p class="value skeleton" data-value="£{{ '{:,.2f}'.format(company_value) }}"></p>
+      {% else %}
+        <p class="value empty-state">No data</p>
+      {% endif %}
+    </div>
+    <div class="card">
+      <h2>Company Cash</h2>
+      {% if company_cash %}
+        <p class="value skeleton" data-value="£{{ '{:,.2f}'.format(company_cash) }}"></p>
+      {% else %}
+        <p class="value empty-state">No data</p>
+      {% endif %}
+    </div>
+    <div class="card">
+      <h2>Properties — Personal</h2>
+      {% if personal_count %}
+        <p class="value skeleton" data-value="{{ personal_count }}"></p>
+      {% else %}
+        <p class="value empty-state">No properties</p>
+      {% endif %}
+    </div>
+    <div class="card">
+      <h2>Properties — Company</h2>
+      {% if company_count %}
+        <p class="value skeleton" data-value="{{ company_count }}"></p>
+      {% else %}
+        <p class="value empty-state">No properties</p>
+      {% endif %}
+    </div>
+    <div class="card">
+      <h2>Gross / Net Income</h2>
+      <div class="toggle">
+        <button class="{% if period == 'month' %}active{% endif %}" onclick="location.href='/?period=month'">Month</button>
+        <button class="{% if period == 'year' %}active{% endif %}" onclick="location.href='/?period=year'">Year</button>
+      </div>
+      {% if gross_income or net_income %}
+        <p class="value skeleton" data-value="£{{ '{:,.2f}'.format(gross_income) }} / £{{ '{:,.2f}'.format(net_income) }}"></p>
+      {% else %}
+        <p class="value empty-state">No data</p>
+      {% endif %}
     </div>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.value.skeleton').forEach(el => {
+        el.textContent = el.dataset.value;
+        el.classList.remove('skeleton');
+      });
+    });
+  </script>
 {% endblock %}
