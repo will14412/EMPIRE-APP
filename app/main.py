@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, Form
+from fastapi import FastAPI, Request, Depends, Form, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -118,6 +118,12 @@ def delete_property(property_id: int, db: Session = Depends(get_db)):
     crud.delete_property(db, property_id)
     return RedirectResponse(url="/properties", status_code=303)
 
+
+# API endpoint for JSON-based property creation.
+@app.post("/api/properties", response_model=schemas.Property, status_code=status.HTTP_201_CREATED)
+def create_property_api(property_in: schemas.PropertyCreate, db: Session = Depends(get_db)):
+    """Create a new property record from a JSON payload."""
+    return crud.create_property(db, property_in)
 
 # Include placeholder routers for future functionality.
 app.include_router(refinancing.router)
