@@ -10,6 +10,7 @@
         <th>Value</th>
         <th>Type</th>
         <th>Address</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -20,10 +21,16 @@
         <td>£{{ '{:,.2f}'.format(property.value) }}</td>
         <td>{{ property.type.value }}</td>
         <td>{{ property.address }}</td>
+        <td>
+          <a href="/properties/{{ property.id }}/edit" class="btn">Edit</a>
+          <form action="/properties/{{ property.id }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete property?');">
+            <button type="submit" class="btn btn-secondary">Delete</button>
+          </form>
+        </td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="5" class="no-data">No properties added yet.</td>
+        <td colspan="6" class="no-data">No properties added yet.</td>
       </tr>
       {% endfor %}
     </tbody>
