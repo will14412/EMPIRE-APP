@@ -185,6 +185,15 @@ body {
   flex-direction: column;
 }
 
+.dual-input {
+  display: flex;
+  gap: 1rem;
+}
+
+.dual-input .form-group {
+  flex: 1;
+}
+
 .form-group label {
   margin-bottom: 0.5rem;
   font-weight: 500;

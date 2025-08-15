@@ -60,27 +60,30 @@
           <option value="hmo">HMO</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="rent_input_type">Monthly rent input</label>
-        <select id="rent_input_type">
-          <option value="currency">£</option>
-          <option value="percent">%</option>
-        </select>
-      </div>
-      <div class="form-group" id="rent_percent_group" style="display: none;">
-        <label for="monthly_rent_percent">Monthly rent (%)</label>
-        <input type="number" id="monthly_rent_percent" step="0.01" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="monthly_rent">Monthly rent (£)</label>
-        <input
-          type="number"
-          id="monthly_rent"
-          name="monthly_rent"
-          step="0.01"
-          min="0"
-          required
-        />
+      <div class="dual-input">
+        <div class="form-group">
+          <label for="monthly_rent_percent">Monthly rent (%)</label>
+          <input
+            type="number"
+            id="monthly_rent_percent"
+            name="monthly_rent_percent"
+            step="0.01"
+            min="0"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="monthly_rent">Monthly rent (£)</label>
+          <input
+            type="number"
+            id="monthly_rent"
+            name="monthly_rent"
+            step="0.01"
+            min="0"
+            required
+            readonly
+          />
+        </div>
       </div>
       <div class="form-group">
         <label for="indexation_type">Indexation type</label>
@@ -149,8 +152,6 @@
     const GET_ADDRESS_API_KEY = "MR3OmMfdukGPgl0gW_Ztxw44533"; // Replace with your API key
     const addressSelect = document.getElementById("address");
     const nameInput = document.getElementById("name");
-    const rentInputType = document.getElementById("rent_input_type");
-    const rentPercentGroup = document.getElementById("rent_percent_group");
     const rentPercentInput = document.getElementById("monthly_rent_percent");
     const monthlyRentInput = document.getElementById("monthly_rent");
     const propertyValueInput = document.getElementById("purchase_price");
@@ -203,17 +204,6 @@
       nameInput.value = firstPart;
     });
 
-    rentInputType.addEventListener("change", () => {
-      if (rentInputType.value === "percent") {
-        rentPercentGroup.style.display = "flex";
-        monthlyRentInput.readOnly = true;
-        monthlyRentInput.value = "";
-      } else {
-        rentPercentGroup.style.display = "none";
-        monthlyRentInput.readOnly = false;
-      }
-    });
-
     function updateMonthlyRent() {
       const value = parseFloat(propertyValueInput.value);
       const percent = parseFloat(rentPercentInput.value);
@@ -225,9 +215,7 @@
     }
 
     rentPercentInput.addEventListener("input", updateMonthlyRent);
-    propertyValueInput.addEventListener("input", () => {
-      if (rentInputType.value === "percent") updateMonthlyRent();
-    });
+    propertyValueInput.addEventListener("input", updateMonthlyRent);
 
     function updateLeaseEnd() {
       const startDate = new Date(leaseStartInput.value);
