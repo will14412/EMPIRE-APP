@@ -20,6 +20,9 @@ templates = Jinja2Templates(directory="templates")
 # Serve static files (CSS, JS, images) from the 'static' directory.
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Include stats router before property routes to avoid path conflicts.
+app.include_router(stats.router)
+
 
 def get_db():
     """Provide a SQLAlchemy database session to path operations."""
@@ -116,6 +119,5 @@ def create_property_api(property_in: schemas.PropertyCreate, db: Session = Depen
     return crud.create_property(db, property_in)
 
 # Include placeholder routers for future functionality.
-app.include_router(stats.router)
 app.include_router(refinancing.router)
 app.include_router(acquisition.router)

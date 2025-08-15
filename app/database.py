@@ -24,6 +24,7 @@ def init_db():
         column["name"] for column in inspector.get_columns("properties")
     }
     required_columns = {
+        "postcode",
         "lease_type",
         "rent_input_type",
         "yearly_rent_percent",
@@ -44,6 +45,7 @@ def init_db():
         with engine.begin() as conn:
             for column in missing:
                 if column in {
+                    "postcode",
                     "lease_type",
                     "rent_input_type",
                     "indexation_type",
