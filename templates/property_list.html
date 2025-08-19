@@ -2,34 +2,23 @@
 {% block title %}Property List – Property Planner{% endblock %}
 {% block content %}
   <h1 class="page-title">Property List</h1>
-  <table class="property-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Type</th>
-        <th>Address</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for property in properties %}
-      <tr>
-        <td>{{ property.id }}</td>
-        <td>{{ property.name }}</td>
-        <td>£{{ '{:,.2f}'.format(property.value) }}</td>
-        <td>{{ property.type.value }}</td>
-        <td>{{ property.address }}</td>
-        <td>
-          <a href="/properties/{{ property.id }}" class="btn">View</a>
-        </td>
-      </tr>
-      {% else %}
-      <tr>
-        <td colspan="6" class="no-data">No properties added yet.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="property-grid">
+    {% for property in properties %}
+    <details class="property-card">
+      <summary>
+        <h2 class="property-card-title">{{ property.name }}</h2>
+        <p class="property-card-subtitle">{{ property.address }}</p>
+      </summary>
+      <div class="property-card-body">
+        <p><strong>ID:</strong> {{ property.id }}</p>
+        <p><strong>Value:</strong> £{{ '{:,.2f}'.format(property.value) }}</p>
+        <p><strong>Type:</strong> {{ property.type.value }}</p>
+        <p><strong>Address:</strong> {{ property.address }}</p>
+        <a href="/properties/{{ property.id }}" class="btn">View</a>
+      </div>
+    </details>
+    {% else %}
+    <p class="no-data">No properties added yet.</p>
+    {% endfor %}
+  </div>
 {% endblock %}
