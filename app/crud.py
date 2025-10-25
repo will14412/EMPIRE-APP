@@ -52,14 +52,16 @@ def portfolio_summary(db: Session, period: str = "month"):
     """
 
     personal_count = (
-        db.query(models.Property)
+        db.query(func.count(models.Property.id))
         .filter(models.Property.type == models.PropertyType.personal)
-        .count()
+        .scalar()
+        or 0
     )
     company_count = (
-        db.query(models.Property)
+        db.query(func.count(models.Property.id))
         .filter(models.Property.type == models.PropertyType.company)
-        .count()
+        .scalar()
+        or 0
     )
     company_value = (
         db.query(func.sum(models.Property.value))
